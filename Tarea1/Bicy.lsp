@@ -15,6 +15,7 @@
 ; C: Centro de la rueda
 ; R: Radio de la rueda
 (defun rueda (C R / ang delta p2)
+	(command "._layer" "_S" "Ruedas" "")
 	; Se dibuja el arco interno de la rueda y arco externo que tiene 10 unidade mas de radio
 	(command "._circle" C R)
 	(command "._circle" C (+ R 10))
@@ -23,6 +24,7 @@
 	; Para calcular las cordenadas del segunod punto de la linea se usa cords (angulo R)
 
 	(setq ang 0.0)
+	(command "._layer" "_S" "Ruedas_Detalles" "")
 	(while (< ang 360.0)
 		(setq delta (cords (aGrados ang) R))
 		(setq p2 (list (+ (nth 0 delta) (nth 0 C)) (+ (nth 1 delta) (nth 1 C))))
@@ -38,7 +40,11 @@
 	(setq psillabajo (list (- (nth 0 pini) 10) (+ (nth 1 pini) 50)))
 	(setq psillaIz (list (- (nth 0 psillabajo) 30) (+ (nth 1 psillabajo) 20)))
 	(setq psillaDr (list (+ (nth 0 psillabajo) 50) (+ (nth 1 psillabajo) 20)))
-	(command "._line" pini psillabajo psillaDr psillaIz psillabajo "")
+
+	(command "._layer" "_S" "Marco" "")
+	(command "._line" pini psillabajo "")
+	(command "._layer" "_S" "Otros" "")
+	(command "._line" psillabajo psillaDr psillaIz psillabajo "")
 )
 
 ; Funcion para dibujar el manubrio
@@ -48,6 +54,7 @@
 	(setq parco2 (list (+ (nth 0 pini) 50) (- (nth 1 pini) 30)))
 	(setq parco3 (list (- (nth 0 pini) 1) (- (nth 1 pini) 30)))
 	(command "._line" pini parco1 "")
+	(command "._layer" "_S" "Otros" "")
 	(command "._arc" parco1 parco2 parco3)
 )
 ; Funcion para dibujar el marco de la bicicleta
@@ -73,9 +80,17 @@
 
 ; Funcion la cual dibuja la bicicleta en su totalidad
 (defun bicy ( / Rrueda1 Rrueda2 Crueda1 Crueda2 distMarco delta p2MarcoBajo p1MarcoAlto p2MarcoAlto)
-		; Se piden los radios de las ruedas
+	; Se piden los radios de las ruedas
 	(setq Rrueda1 (getreal "Radio de la rueda tracera: "))
 	(setq Rrueda2 (getreal "Radio de la rueda delantera: "))
+	(setq color (getint "Numero de color del marco: "))
+
+	; Se crean las capas para colocarles el color correspondiente a cada elemento
+	(command "._layer" "_N" "Ruedas" "_C" 250 "Ruedas" "")
+	(command "._layer" "_N" "Ruedas_Detalles" "_C" 252 "Ruedas_Detalles" "")
+	(command "._layer" "_N" "Otros"  "_C" 37 "Otros" "")
+	(command "._layer" "_N" "Marco"  "_C" color "Marco" "")
+
 
 	; Se calcula la ubicacion de las ruedas y la distancia entre ellas dependiendo de sus radios
 	(setq Crueda1 (list 0 100))
@@ -83,11 +98,12 @@
 		(+ Rrueda1 (if (= Rrueda1 Rrueda2) (* 2 Rrueda2) 200) Rrueda2) 
 		(+ Rrueda2 (- Rrueda1) 100))
 	)
-
+	
 	; Dibujamos las ruedas
 	(rueda Crueda1 Rrueda1)
 	(rueda Crueda2 Rrueda2)
 
+	(command "._layer" "_S" "Marco" "")
 	; Calculamos el marco mediante la distancia media entre las ruedas
 	(setq distMarco (* (distance Crueda1 Crueda2) 0.5))
 	(setq delta (cords (angle Crueda1 Crueda2) distMarco))
@@ -103,11 +119,12 @@
 	; Dibujamos el marco
 	(marco Crueda1 p2MarcoBajo p2MarcoAlto p1MarcoAlto Crueda2)
 
+	(command "._layer" "_S" "Otros" "")
 	; Dibujamos la silla
 	(silla p1MarcoAlto)
 
 	; Dibujamos el manubrio
 	(manubrio p2MarcoAlto)
 )		
-;
+
 
