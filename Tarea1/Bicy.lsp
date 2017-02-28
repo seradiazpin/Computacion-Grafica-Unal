@@ -1,3 +1,8 @@
+
+; Sergio Alejandro Diaz Pinilla - 1032458183
+; ------- Tarea 1 - Dibujo Libre --------------
+
+
 ; funcion para pasar de grados a radianes
 ; grado: grado a comvertir
 (defun aGrados(grado) 
